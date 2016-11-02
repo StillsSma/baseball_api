@@ -1,5 +1,11 @@
 from django.db import models
 
+def int_or_zero(val):
+    try:
+        return int(val)
+    except ValueError:
+        return 0
+
 class Master(models.Model):
     player_id = models.CharField(max_length=20)
     birth_year = models.CharField(max_length=20)
@@ -49,6 +55,14 @@ class Batting(models.Model):
     sacrifice_hits = models.CharField(max_length=100)
     sacfifice_flies = models.CharField(max_length=100)
     grounded_into_double_plays = models.CharField(max_length=100)
+
+
+    @property
+    def on_base_percentage(self):
+        # "" = 0
+        numerator = int_or_zero(self.hits) + int_or_zero(self.base_on_balls) + int_or_zero(self.hit_by_pitch)
+        denominator = int_or_zero(self.at_bats) + int_or_zero(self.base_on_balls) + int_or_zero(self.hit_by_pitch) + int_or_zero(self.sacfifice_flies)
+        return numerator/denominator
 
 class Pitching(models.Model):
     player_id = models.ForeignKey(Master)
